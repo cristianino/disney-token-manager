@@ -1,7 +1,3 @@
-Sure! Below is the information for your README file in Markdown format:
-
----
-
 # Disney Token Manager with ERC-20 (no-official)
 
 ## Introduction
