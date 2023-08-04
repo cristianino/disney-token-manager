@@ -56,7 +56,7 @@ Here are some code snippets to demonstrate how to interact with the contract:
 
 1. **Creating an Attraction:**
 ```solidity
-// Crear nuevas atracciones para DISNEY (SOLO es ejecutable por Disney)
+    // Crear nuevas atracciones para DISNEY (SOLO es ejecutable por Disney)
     function NuevaAtraccion(string memory _nombreAtraccion, uint _precio) public Unicamente (msg.sender) {
         // Creacion de una atraccion en Disney 
         MappingAtracciones[_nombreAtraccion] = atraccion(_nombreAtraccion,_precio, true);
@@ -69,7 +69,7 @@ Here are some code snippets to demonstrate how to interact with the contract:
 
 2. **Activating an Attraction:**
 ```solidity
-// Funcion para subirse a una atraccion de disney y pagar en tokens 
+    // Funcion para subirse a una atraccion de disney y pagar en tokens 
     function SubirseAtraccion (string memory _nombreAtraccion) public {
         // Precio de la atraccion (en tokens)
         uint tokens_atraccion = MappingAtracciones[_nombreAtraccion].precio_atraccion;
@@ -96,7 +96,7 @@ Here are some code snippets to demonstrate how to interact with the contract:
 
 3. **Paying for Food:**
 ```solidity
-// Funcion para comprar comida con tokens
+    // Funcion para comprar comida con tokens
     function ComprarComida (string memory _nombreComida) public {
         // Precio de la comida (en tokens)
         uint tokens_comida = MappingComida[_nombreComida].precio_comida;
@@ -123,7 +123,7 @@ Here are some code snippets to demonstrate how to interact with the contract:
 
 4. **Viewing Transaction History:**
 ```solidity
-// Visualiza el historial completo de atracciones disfrutadas por un cliente 
+    // Visualiza el historial completo de atracciones disfrutadas por un cliente 
     function Historial() public view returns (string [] memory) {
         return HistorialAtracciones[msg.sender];
     }
