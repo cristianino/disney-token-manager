@@ -56,29 +56,81 @@ Here are some code snippets to demonstrate how to interact with the contract:
 
 1. **Creating an Attraction:**
 ```solidity
-function createAttraction(string memory name, string memory description) public onlyOwner {
-    // Function implementation
-}
+// Crear nuevas atracciones para DISNEY (SOLO es ejecutable por Disney)
+    function NuevaAtraccion(string memory _nombreAtraccion, uint _precio) public Unicamente (msg.sender) {
+        // Creacion de una atraccion en Disney 
+        MappingAtracciones[_nombreAtraccion] = atraccion(_nombreAtraccion,_precio, true);
+        // Almacenamiento en un array el nombre de la atraccion 
+        Atracciones.push(_nombreAtraccion);
+        // Emision del evento para la nueva atraccion 
+        emit nueva_atraccion(_nombreAtraccion, _precio);
+    }
 ```
 
 2. **Activating an Attraction:**
 ```solidity
-function activateAttraction(uint256 attractionId) public onlyOwner {
-    // Function implementation
-}
+// Funcion para subirse a una atraccion de disney y pagar en tokens 
+    function SubirseAtraccion (string memory _nombreAtraccion) public {
+        // Precio de la atraccion (en tokens)
+        uint tokens_atraccion = MappingAtracciones[_nombreAtraccion].precio_atraccion;
+        // Verifica el estado de la atraccion (si esta disponible para su uso)
+        require (MappingAtracciones[_nombreAtraccion].estado_atraccion == true, 
+                    "La atraccion no esta disponible en estos momentos.");
+        // Verifica el numero de tokens que tiene el cliente para subirse a la atraccion 
+        require(tokens_atraccion <= MisTokens(), 
+                "Necesitas mas Tokens para subirte a esta atraccion.");
+        
+        /* El cliente paga la atraccion en Tokens:
+        - Ha sido necesario crear una funcion en ERC20.sol con el nombre de: 'transferencia_disney'
+        debido a que en caso de usar el Transfer o TransferFrom las direcciones que se escogian 
+        para realizar la transccion eran equivocadas. Ya que el msg.sender que recibia el metodo Transfer o
+        TransferFrom era la direccion del contrato.
+        */
+        token.transferencia_disney(msg.sender, address(this),tokens_atraccion);
+        // Almacenamiento en el historial de atracciones del cliente 
+        HistorialAtracciones[msg.sender].push(_nombreAtraccion);
+        // Emision del evento para disfrutar de la atraccion 
+        emit disfruta_atraccion(_nombreAtraccion, tokens_atraccion, msg.sender);
+    }
 ```
 
 3. **Paying for Food:**
 ```solidity
-function payForFood(uint256 amount) public {
-    // Function implementation
-}
+// Funcion para comprar comida con tokens
+    function ComprarComida (string memory _nombreComida) public {
+        // Precio de la comida (en tokens)
+        uint tokens_comida = MappingComida[_nombreComida].precio_comida;
+        // Verifica el estado de la comida (si esta disponible)
+        require (MappingComida[_nombreComida].estado_comida == true, 
+                    "La comida no esta disponible en estos momentos.");
+        // Verifica el numero de tokens que tiene el cliente para comer esa comida
+        require(tokens_comida <= MisTokens(), 
+                "Necesitas mas Tokens para comer esta comida.");
+        
+        /* El cliente paga la atraccion en Tokens:
+        - Ha sido necesario crear una funcion en ERC20.sol con el nombre de: 'transferencia_disney'
+        debido a que en caso de usar el Transfer o TransferFrom las direcciones que se escogian 
+        para realizar la transccion eran equivocadas. Ya que el msg.sender que recibia el metodo Transfer o
+        TransferFrom era la direccion del contrato.
+        */
+        token.transferencia_disney(msg.sender, address(this),tokens_comida);
+        // Almacenamiento en el historial de comidas del cliente 
+        HistorialComidas[msg.sender].push(_nombreComida);
+        // Emision del evento para disfrutar de la comida 
+        emit disfruta_comida(_nombreComida, tokens_comida, msg.sender);
+    }
 ```
 
 4. **Viewing Transaction History:**
 ```solidity
-function getTransactionHistory(address client) public view returns (Transaction[] memory) {
-    // Function implementation
-}
+// Visualiza el historial completo de atracciones disfrutadas por un cliente 
+    function Historial() public view returns (string [] memory) {
+        return HistorialAtracciones[msg.sender];
+    }
+    
+    // Visualiza el historial completo de comidas disfrutadas por un cliente 
+    function HistorialComida() public view returns (string [] memory) {
+        return HistorialComidas[msg.sender];
+    }
 ```
 
