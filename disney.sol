@@ -11,6 +11,8 @@ contract Disney{
     
     // Direccion de Disney (owner)
     address payable public owner;
+
+    uint256 hold_token = 0;
     
     // Constructor 
     constructor () public {
@@ -53,6 +55,8 @@ contract Disney{
         token.transfer(msg.sender, _numTokens);
         // Registro de tokens comprados
         Clientes[msg.sender].tokens_comprados += _numTokens;
+        //Registro de tokens que no se han reclamado
+        hold_token += _numTokens;
     }
     
     // Balance de tokens del contrato disney
@@ -190,6 +194,8 @@ contract Disney{
         HistorialAtracciones[msg.sender].push(_nombreAtraccion);
         // Emision del evento para disfrutar de la atraccion 
         emit disfruta_atraccion(_nombreAtraccion, tokens_atraccion, msg.sender);
+        //Registro de tokens que no se han reclamado
+        hold_token -= tokens_atraccion;
     }
     
     // Funcion para comprar comida con tokens
@@ -214,6 +220,8 @@ contract Disney{
         HistorialComidas[msg.sender].push(_nombreComida);
         // Emision del evento para disfrutar de la comida 
         emit disfruta_comida(_nombreComida, tokens_comida, msg.sender);
+        //Registro de tokens que no se han reclamado
+        hold_token -= tokens_comida;
     }
     
     // Visualiza el historial completo de atracciones disfrutadas por un cliente 
@@ -224,6 +232,16 @@ contract Disney{
     // Visualiza el historial completo de comidas disfrutadas por un cliente 
     function HistorialComida() public view returns (string [] memory) {
         return HistorialComidas[msg.sender];
+    }
+
+    // Visualiza el total de tokens sin reclamar
+    function TotalTokensHold() public Unicamente(msg.sender) view returns (uint256) {
+        return hold_token;
+    }
+
+    // Visualiza el saldo retirable
+    function SaldoRetirable() public Unicamente(msg.sender) view returns (uint256) {
+        return address(this).balance - PrecioTokens(hold_token);
     }
     
     // Funcion para que un cliente de Disney pueda devolver Tokens 
@@ -236,6 +254,15 @@ contract Disney{
          token.transferencia_disney(msg.sender, address(this),_numTokens);
          // Devolucion de los ethers al cliente 
          msg.sender.transfer(PrecioTokens(_numTokens));
+
+        //Registro de tokens que no se han reclamado
+        hold_token -= _numTokens;
+    }
+
+    // Funcion para que un el dueño retire todos los fondos
+    function SacarSaldoTotal () public Unicamente(msg.sender) payable {
+         // Devolucion de los ethers al dueño 
+         msg.sender.transfer(address(this).balance - PrecioTokens(hold_token));
     }
     
 }
