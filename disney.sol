@@ -265,5 +265,13 @@ contract Disney{
          // Devolucion de los ethers al dueño 
          msg.sender.transfer(address(this).balance - PrecioTokens(hold_token));
     }
+
+    // Funcion para que un el dueño retire parte los fondos
+    function SacarSaldo (uint _saldo) public Unicamente(msg.sender) payable {
+         // El saldo a sacar debe ser menor al saldo del tokens en hold
+         require(_saldo <= PrecioTokens(hold_token), "Saldo insuficiente.");
+         // Devolucion de los ethers al dueño 
+         msg.sender.transfer(_saldo);
+    }
     
 }
